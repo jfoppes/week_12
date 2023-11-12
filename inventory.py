@@ -41,39 +41,38 @@ def processOrders():
     os.chdir(incommingDir)
     for file in os.listdir():# for each file in the ordere dir: read the first line 
         neworder = [] 
-        with open(file) as f:
+        with open(file) as f: # open the order csv file,read it and add the contact info to the dictionary of the new order
             order = csv.reader(f)
             custInf = list(csv.DictReader(f))
             contactInfo=custInf[0]
             neworder.append(contactInfo)
             f.close()
-        with open(file) as f:
+        with open(file) as f: # open the same order file startin g at line 3 (lines 1, 2 are the contact info )
             order = csv.reader(f)
             order = list(order)
             order = order[2:]
             cart = {}
             for i in order:
-                cart[i[0]]= int(i[1])
-            neworder.append(cart)
-            orders.append(neworder)
-            
-        for i in stockRoom:
+                cart[i[0]]= int(i[1]) # adding entry to cart where key is anme of item and vlaue is the qty ordered
+            neworder.append(cart) # add the cart to the order withthe cusotmer info
+            orders.append(neworder) # add the processed order to the end of the orders list
+        for i in stockRoom: # for each item in stockroom identify key value item pairs and if the items  in the cart, subtract the number ordered for the instock qty
             for key,value in cart.items():
                 if i["Product_Name"] == key:
                     i["Stock_Level"] -=value
             
         
-        src = "incomming_orders/{}".format(file)
-        dst = "processed_orders/{}".format(file)
+        src = "incomming_orders/{}".format(file) #defining order file DIR
+        dst = "processed_orders/{}".format(file) # defining processed order DIR
         os.chdir(owd)
-        shutil.move(src,dst)
+        shutil.move(src,dst) # move the order from incomming to processesed
         os.chdir(incommingDir)
         print("""
             Order {num} for {name} processed
               """.format(num=neworder[0]["ORDER-ID"],name = neworder[0]["LAST"]), order)
-        
+    # save the stockroom data 
     keys = stockRoom[0]
-    os.chdir(owd)
+    os.chdir(owd) 
     with open("stock.csv","w",newline="") as stocklevs: #open the Stockroom CSV and write changes to it 
                 writer = csv.DictWriter(stocklevs,keys)
                 writer.writeheader()
