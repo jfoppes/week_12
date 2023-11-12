@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
-#Jaocb Foppes CINF308 Progrmaing For INF Proejct 10 - Algorithyms - Stock Manager
+#Jaocb Foppes CINF308 Progrmaing For INF Proejct 12 - Algorithyms - Stock Manager
 
 import csv
 import operator
 import time
-
+import os
+import shutil
+owd = os.getcwd()
 
 """ This program reports stock of items for a warehouse
     stock levels will be pulled from and saved to a CSV file"""
@@ -15,12 +17,78 @@ stockRoom = [] # dictionary of procuts and stock levels
 inStock = []
 onOrder = {}
 prodCats = ["","phone","watch","laptop","tablet","desktop"]
+
+res4Fullfillment = {}
+owd = os.getcwd()
+
+
+
+""" Back Of House - Processing an online order for fullfillment. 
+This Program will take any number of "order" csv files as an input .
+The order csv file will have a numeric name, a customer name, a cusotomer emial, and a customer phone number, and address, 
+as well as the lsit of products and qualites the cusotmer is ordering.
+This progrma will process the order csv file and subtract the qanitites from the instock quanity, and add them to the on order list. 
+It will then generate a line in the fullfillment document 
+This program will use the inventory system I created in week 10"""
+
+# This section will process the csv files in the orders foler 
+orders = [] # list of all orders each order is 
+def processOrders():
+    readStock()
+    global stockRoom,inStock,onOrder
+    print("Rrocessing Orders... ")
+    incommingDir = "incomming_orders/"
+    os.chdir(incommingDir)
+    for file in os.listdir():# for each file in the ordere dir: read the first line 
+        neworder = [] 
+        with open(file) as f:
+            order = csv.reader(f)
+            custInf = list(csv.DictReader(f))
+            contactInfo=custInf[0]
+            neworder.append(contactInfo)
+            f.close()
+        with open(file) as f:
+            order = csv.reader(f)
+            order = list(order)
+            order = order[2:]
+            cart = {}
+            for i in order:
+                cart[i[0]]= int(i[1])
+            neworder.append(cart)
+            orders.append(neworder)
+            
+        for i in stockRoom:
+            for key,value in cart.items():
+                if i["Product_Name"] == key:
+                    i["Stock_Level"] -=value
+            
+        
+        src = "incomming_orders/{}".format(file)
+        dst = "processed_orders/{}".format(file)
+        os.chdir(owd)
+        shutil.move(src,dst)
+        os.chdir(incommingDir)
+        print("""
+            Order {num} for {name} processed
+              """.format(num=neworder[0]["ORDER-ID"],name = neworder[0]["LAST"]), order)
+        
+    keys = stockRoom[0]
+    os.chdir(owd)
+    with open("stock.csv","w",newline="") as stocklevs: #open the Stockroom CSV and write changes to it 
+                writer = csv.DictWriter(stocklevs,keys)
+                writer.writeheader()
+                writer.writerows(stockRoom)
+                stocklevs.close()    
+      
+    
+       
              
 def readStock(): # this function read the CSV file of stock levels and creates dictionaiores of each prodcut to add to the stockroom list 
     global stockRoom,inStock,onOrder
     stockRoom = []
     inStock = []
     onOrder = {}
+    os.chdir(owd)
     with open("stock.csv","r+") as s:# create lsit of products. each produt is a dictionairs 
         reader = csv.DictReader(s)
         for i in reader:
@@ -200,6 +268,8 @@ def welcome(): # This fuction is where the user will be able to choose what they
                    Enter (3) to Create a new Product
                    
                    Enter (4) to Delete a Product
+                   
+                   Enter (5) To Process orders
                    """))
     if choice == 1:
         stockLevel()
@@ -238,5 +308,7 @@ def welcome(): # This fuction is where the user will be able to choose what they
             print("Make a valid choice")  
     elif choice == 4:
         deleteProduct()
+    elif choice == 5:
+        processOrders()
 while True:
     welcome() 

@@ -1,15 +1,15 @@
 Product_Name,Product_Category,Stock_Level,Target_Stock
-iPhone 14,phone,10,12
+iPhone 14,phone,38,12
 Macbook Pro 16in,laptop,4,6
-iPhone 13,phone,7,10
-iPad Pro,tablet,6,10
-Watch Series 3,watch,12,12
-iMac 21in,desktop,4,5
+iPhone 13,phone,40,10
+iPad Pro,tablet,2,10
+Watch Series 3,watch,50,12
+iMac 21in,desktop,0,5
 Watch Ultra,watch,6,7
-Watch Ultra 2,watch,5,5
+Watch Ultra 2,watch,50,5
 Watch Series 6,watch,0,7
 iPhone 15,phone,0,10
-Mac Pro,desktop,5,5
+Mac Pro,desktop,2,5
 iMac Pro,desktop,3,2
 Macbook Air 13in,laptop,4,8
 iPhone 5,phone,0,0
